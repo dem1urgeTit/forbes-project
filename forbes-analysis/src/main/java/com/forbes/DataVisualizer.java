@@ -11,20 +11,20 @@ import java.util.Map;
 public class DataVisualizer {
     private Connection connection;
 
-    // Конструктор принимает соединение из DatabaseManager
+
     public DataVisualizer(Connection connection) {
         this.connection = connection;
     }
 
     public void showCountryWealthChart() {
         try {
-            // Проверяем соединение
+
             if (connection == null || connection.isClosed()) {
                 System.out.println("Соединение с БД не активно для визуализации");
                 return;
             }
 
-            // Получаем данные для графика
+
             String query =
                     "SELECT c.name AS country, SUM(b.net_worth) AS total_wealth " +
                             "FROM billionaires b " +
@@ -47,13 +47,13 @@ public class DataVisualizer {
             rs.close();
             stmt.close();
 
-            // Создаем окно с графиком
+
             JFrame frame = new JFrame("Общий капитал миллиардеров по странам");
             frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             frame.setSize(1000, 700);
             frame.setLocationRelativeTo(null);
 
-            // Создаем панель для графика
+
             JPanel chartPanel = new JPanel() {
                 @Override
                 protected void paintComponent(Graphics g) {
@@ -67,52 +67,52 @@ public class DataVisualizer {
                     int chartWidth = width - 2 * padding;
                     int chartHeight = height - 2 * padding;
 
-                    // Заголовок
+
                     g2d.setFont(new Font("Arial", Font.BOLD, 18));
                     g2d.drawString("Топ-10 стран по общему капиталу миллиардеров", width/2 - 200, 30);
 
-                    // Находим максимальное значение
+
                     double maxWealth = wealth.stream().max(Double::compare).orElse(1.0);
 
-                    // Оси
+
                     g2d.drawLine(padding, height - padding, width - padding, height - padding); // X ось
                     g2d.drawLine(padding, padding, padding, height - padding); // Y ось
 
-                    // Подписи к осям
+
                     g2d.setFont(new Font("Arial", Font.PLAIN, 12));
                     g2d.drawString("Страны", width/2, height - 10);
                     g2d.rotate(-Math.PI/2);
                     g2d.drawString("Капитал (млрд $)", -height/2, 20);
                     g2d.rotate(Math.PI/2);
 
-                    // Рисуем столбцы
+
                     int barWidth = chartWidth / (countries.size() * 2);
                     for (int i = 0; i < countries.size(); i++) {
                         int barHeight = (int) ((wealth.get(i) / maxWealth) * chartHeight);
                         int x = padding + i * (barWidth * 2);
                         int y = height - padding - barHeight;
 
-                        // Столбец
+
                         g2d.setColor(new Color(70, 130, 180));
                         g2d.fillRect(x, y, barWidth, barHeight);
 
-                        // Обводка
+
                         g2d.setColor(Color.BLACK);
                         g2d.drawRect(x, y, barWidth, barHeight);
 
-                        // Подпись страны (под осью X)
+
                         String country = countries.get(i);
                         if (country.length() > 10) {
                             country = country.substring(0, 10) + "...";
                         }
                         g2d.drawString(country, x, height - padding + 20);
 
-                        // Значение над столбцом
+
                         String value = String.format("%.1f", wealth.get(i));
                         g2d.drawString(value, x, y - 5);
                     }
 
-                    // Легенда
+
                     g2d.setColor(new Color(70, 130, 180));
                     g2d.fillRect(width - 150, 50, 20, 20);
                     g2d.setColor(Color.BLACK);
@@ -132,13 +132,13 @@ public class DataVisualizer {
 
     public void showIndustryDistribution() {
         try {
-            // Проверяем соединение
+
             if (connection == null || connection.isClosed()) {
                 System.out.println("Соединение с БД не активно для визуализации");
                 return;
             }
 
-            // Получаем распределение по отраслям для США
+
             String query =
                     "SELECT i.name AS industry, COUNT(*) as count, AVG(b.net_worth) as avg_wealth " +
                             "FROM billionaires b " +
@@ -165,7 +165,7 @@ public class DataVisualizer {
             rs.close();
             stmt.close();
 
-            // Создаем окно с круговой диаграммой
+
             JFrame frame = new JFrame("Распределение миллиардеров США по отраслям");
             frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             frame.setSize(900, 700);
@@ -181,16 +181,16 @@ public class DataVisualizer {
                     int width = getWidth();
                     int height = getHeight();
 
-                    // Заголовок
+
                     g2d.setFont(new Font("Arial", Font.BOLD, 16));
                     g2d.drawString("Топ-10 отраслей миллиардеров США", width/2 - 150, 30);
 
-                    // Круговая диаграмма
+
                     int centerX = width / 3;
                     int centerY = height / 2;
                     int radius = 200;
 
-                    // Цвета для секторов
+
                     Color[] colors = {
                             new Color(255, 99, 132),   // красный
                             new Color(54, 162, 235),   // синий
@@ -207,7 +207,7 @@ public class DataVisualizer {
                     int totalCount = counts.stream().mapToInt(Integer::intValue).sum();
                     int startAngle = 0;
 
-                    // Рисуем сектора
+
                     for (int i = 0; i < industries.size(); i++) {
                         int arcAngle = (int) (360 * counts.get(i) / (double) totalCount);
                         g2d.setColor(colors[i % colors.length]);
@@ -221,7 +221,7 @@ public class DataVisualizer {
                         startAngle += arcAngle;
                     }
 
-                    // Легенда
+
                     int legendX = width * 2 / 3;
                     int legendY = 100;
 
@@ -238,7 +238,7 @@ public class DataVisualizer {
                         g2d.drawString(label, legendX + 30, legendY + i * 30 + 15);
                     }
 
-                    // Статистика
+
                     g2d.setFont(new Font("Arial", Font.PLAIN, 12));
                     g2d.drawString("Всего миллиардеров в США: " + totalCount,
                             legendX, legendY + industries.size() * 30 + 30);
@@ -263,13 +263,13 @@ public class DataVisualizer {
 
     public void showTop10Billionaires() {
         try {
-            // Проверяем соединение
+
             if (connection == null || connection.isClosed()) {
                 System.out.println("Соединение с БД не активно для визуализации");
                 return;
             }
 
-            // Получаем топ-10 самых богатых миллиардеров
+
             String query =
                     "SELECT b.name, b.net_worth, b.age, c.name as country " +
                             "FROM billionaires b " +
@@ -295,7 +295,7 @@ public class DataVisualizer {
             rs.close();
             stmt.close();
 
-            // Создаем окно с графиком
+
             JFrame frame = new JFrame("Топ-10 самых богатых миллиардеров мира");
             frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             frame.setSize(1200, 700);
@@ -312,14 +312,14 @@ public class DataVisualizer {
                     int height = getHeight();
                     int padding = 80;
 
-                    // Заголовок
+
                     g2d.setFont(new Font("Arial", Font.BOLD, 20));
                     g2d.drawString("Топ-10 самых богатых миллиардеров мира", width/2 - 200, 40);
 
-                    // Находим максимальное значение
+
                     double maxWealth = wealth.stream().max(Double::compare).orElse(1.0);
 
-                    // Рисуем горизонтальные столбцы (горизонтальная гистограмма)
+
                     int barHeight = 40;
                     int spaceBetweenBars = 10;
                     int totalBarHeight = (barHeight + spaceBetweenBars) * names.size();
@@ -329,16 +329,16 @@ public class DataVisualizer {
                         int barLength = (int) ((wealth.get(i) / maxWealth) * (width - 2 * padding) * 0.9);
                         int y = startY + i * (barHeight + spaceBetweenBars);
 
-                        // Цвет столбца в зависимости от страны
+
                         Color barColor = getCountryColor(countries.get(i));
                         g2d.setColor(barColor);
                         g2d.fillRect(padding, y, barLength, barHeight);
 
-                        // Обводка
+
                         g2d.setColor(Color.BLACK);
                         g2d.drawRect(padding, y, barLength, barHeight);
 
-                        // Имя и детали
+
                         String displayName = names.get(i);
                         if (displayName.length() > 30) {
                             displayName = displayName.substring(0, 30) + "...";
@@ -346,12 +346,12 @@ public class DataVisualizer {
 
                         g2d.drawString((i+1) + ". " + displayName, padding + 5, y + barHeight/2 + 5);
 
-                        // Детальная информация справа
+
                         String details = String.format("$%.1fB | %d лет | %s",
                                 wealth.get(i), ages.get(i), countries.get(i));
                         g2d.drawString(details, padding + barLength + 10, y + barHeight/2 + 5);
 
-                        // Значение капитала на столбце
+
                         if (barLength > 100) {
                             g2d.setColor(Color.WHITE);
                             g2d.drawString("$" + String.format("%.1f", wealth.get(i)) + "B",
@@ -359,7 +359,7 @@ public class DataVisualizer {
                         }
                     }
 
-                    // Легенда стран
+
                     Map<String, Color> countryColors = new HashMap<>();
                     for (int i = 0; i < Math.min(countries.size(), 5); i++) {
                         countryColors.put(countries.get(i), getCountryColor(countries.get(i)));
@@ -383,7 +383,7 @@ public class DataVisualizer {
                         legendIndex++;
                     }
 
-                    // Общая статистика
+
                     g2d.setFont(new Font("Arial", Font.BOLD, 14));
                     double totalWealth = wealth.stream().mapToDouble(Double::doubleValue).sum();
                     g2d.drawString("Общий капитал топ-10: $" + String.format("%.1f", totalWealth) + "B",
@@ -395,7 +395,6 @@ public class DataVisualizer {
                 }
 
                 private Color getCountryColor(String country) {
-                    // Генерируем цвет на основе хеша страны
                     int hash = country.hashCode();
                     return new Color(
                             Math.abs(hash % 200) + 55,
@@ -416,7 +415,6 @@ public class DataVisualizer {
     }
 
     public void showAllCharts() {
-        // Показываем все графики в отдельных потоках
         javax.swing.SwingUtilities.invokeLater(() -> {
             showCountryWealthChart();
             try { Thread.sleep(300); } catch (InterruptedException e) {}

@@ -16,7 +16,7 @@ public class DatabaseManager {
         }
     }
 
-    // Новый метод для получения соединения
+
     public Connection getConnection() {
         return connection;
     }
@@ -25,12 +25,12 @@ public class DatabaseManager {
         try {
             Statement stmt = connection.createStatement();
 
-            // Удаляем старые таблицы, если они существуют
+
             stmt.execute("DROP TABLE IF EXISTS billionaires");
             stmt.execute("DROP TABLE IF EXISTS countries");
             stmt.execute("DROP TABLE IF EXISTS industries");
 
-            // Создаем таблицу стран
+
             String createCountries =
                     "CREATE TABLE countries (" +
                             "    id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -38,7 +38,7 @@ public class DatabaseManager {
                             ")";
             stmt.execute(createCountries);
 
-            // Создаем таблицу отраслей
+
             String createIndustries =
                     "CREATE TABLE industries (" +
                             "    id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -46,7 +46,7 @@ public class DatabaseManager {
                             ")";
             stmt.execute(createIndustries);
 
-            // Создаем таблицу миллиардеров
+
             String createBillionaires =
                     "CREATE TABLE billionaires (" +
                             "    id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -77,7 +77,7 @@ public class DatabaseManager {
         }
 
         try {
-            // Подготовка запросов
+
             String insertCountry = "INSERT OR IGNORE INTO countries (name) VALUES (?)";
             String insertIndustry = "INSERT OR IGNORE INTO industries (name) VALUES (?)";
             String insertBillionaire =
@@ -91,7 +91,7 @@ public class DatabaseManager {
             PreparedStatement industryStmt = connection.prepareStatement(insertIndustry);
             PreparedStatement billionaireStmt = connection.prepareStatement(insertBillionaire);
 
-            // Вставляем уникальные страны и отрасли
+
             for (Billionaire b : billionaires) {
                 countryStmt.setString(1, b.getCountry());
                 countryStmt.addBatch();
@@ -103,7 +103,7 @@ public class DatabaseManager {
             countryStmt.executeBatch();
             industryStmt.executeBatch();
 
-            // Вставляем миллиардеров
+
             for (Billionaire b : billionaires) {
                 billionaireStmt.setInt(1, b.getRank());
                 billionaireStmt.setString(2, b.getName());
@@ -117,7 +117,7 @@ public class DatabaseManager {
 
             billionaireStmt.executeBatch();
 
-            // Закрываем statements
+
             countryStmt.close();
             industryStmt.close();
             billionaireStmt.close();
@@ -182,19 +182,19 @@ public class DatabaseManager {
             ResultSetMetaData metaData = rs.getMetaData();
             int columnCount = metaData.getColumnCount();
 
-            // Выводим заголовки
+
             for (int i = 1; i <= columnCount; i++) {
                 System.out.printf("%-30s", metaData.getColumnName(i));
             }
             System.out.println();
 
-            // Выводим разделитель
+
             for (int i = 1; i <= columnCount; i++) {
                 System.out.printf("%-30s", "------------------------------");
             }
             System.out.println();
 
-            // Выводим данные
+
             while (rs.next()) {
                 for (int i = 1; i <= columnCount; i++) {
                     System.out.printf("%-30s", rs.getString(i));

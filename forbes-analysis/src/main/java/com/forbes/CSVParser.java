@@ -17,7 +17,7 @@ public class CSVParser {
             while ((line = br.readLine()) != null) {
                 if (isFirstLine) {
                     isFirstLine = false;
-                    continue; // Пропускаем заголовок
+                    continue;
                 }
 
                 Billionaire billionaire = parseLine(line);
@@ -38,7 +38,7 @@ public class CSVParser {
 
     private Billionaire parseLine(String line) {
         try {
-            // Разделяем строку с учетом кавычек
+
             String[] parts = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
 
             if (parts.length < 7) {
@@ -46,7 +46,7 @@ public class CSVParser {
                 return null;
             }
 
-            // Убираем лишние пробелы и кавычки
+
             for (int i = 0; i < parts.length; i++) {
                 parts[i] = parts[i].trim();
                 if (parts[i].startsWith("\"") && parts[i].endsWith("\"")) {
@@ -54,7 +54,7 @@ public class CSVParser {
                 }
             }
 
-            // Парсим значения
+
             int rank = Integer.parseInt(parts[0]);
             String name = parts[1];
             double netWorth = Double.parseDouble(parts[2]);

@@ -20,7 +20,7 @@ public class Billionaire {
         this.industry = industry;
     }
 
-    // Геттеры
+
     public int getRank() { return rank; }
     public String getName() { return name; }
     public double getNetWorth() { return netWorth; }
